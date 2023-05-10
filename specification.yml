@@ -1,0 +1,302 @@
+openapi: 3.0.3
+info:
+  title: Сервис друзей OpenAPI спецификация
+  version: 0.0.1
+servers:
+  - url: http://127.0.0.1:8000
+    description: Dev server
+paths:
+  /friends/requestlist/:
+    get:
+      summary: Метод получения входящих и сходящих запросов пользователя
+      tags:
+        - FriendRequests
+      responses:
+        '200':
+          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FriendRequests"
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /friends/request-status/{user_id}/:
+    get:
+      summary: Метод просмотра статуса запроса по идентификатору
+      tags:
+        - FriendRequests
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: Идентификатор запроса в друзья
+          schema:
+            type: integer
+          example: 5
+      responses:
+        '200':
+          description: Already friends / Outgoing request / Incoming request / Nothing
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /friends/accept-request/{request_id}/:
+    get:
+      summary: Метод для принятия заявки в друзья
+      tags:
+        - FriendRequests
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          description: Идентификатор запроса в друзья
+          schema:
+            type: integer
+          example: 5
+      responses:
+        '200':
+          description: Friend request accepted / Friend request not accepted
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /friends/send-request/{user_id}/:
+    get:
+      summary: Метод для отправки запроса в друзья
+      tags:
+        - FriendRequests
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 5
+      responses:
+        '200':
+          description: Added to friends / Friend request sent / Friend request has already sent
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /friends/reject-request/{request_id}/:
+    get:
+      summary: Метод для отклонения заявки в друзья
+      tags:
+        - FriendRequests
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          description: Идентификатор запроса в друзья
+          schema:
+            type: integer
+          example: 5
+      responses:
+        '200':
+          description: Friend request rejected / Request does not exist
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /friends/delete-friend/{user_id}/:
+    get:
+      summary: Метод для удаления друга
+      tags:
+        - Friends
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 5
+      responses:
+        '200':
+          description: Deleted / You are not friends. Can not delete
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /friends/friendslist/:
+    get:
+      summary: Метод просмотра списка друзей
+      tags:
+        - Friends
+      responses:
+        '200':
+          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /auth/login/:
+    post:
+      summary: Метод для авторизации
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '200':
+          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /auth/logout/:
+    get:
+      summary: Метод для выхода из профиля
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Джанговская страница Начало (не авторизован)
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /auth/register/:
+    post:
+      summary: Метод для регистрации
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewUser"
+      responses:
+        '200':
+          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        'default':
+          description: Все нестандартное
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+components:
+  schemas:
+    FriendRequest:
+      type: object
+      required:
+        - from_user
+        - to_user
+      properties:
+        id:
+          type: integer
+          example: 4
+        from_user:
+          type: object
+        to_user:
+          type: object
+        is_friend:
+          type: boolean
+
+
+    FriendRequests:
+      type: array
+      items:
+        $ref: "#/components/schemas/FriendRequest"
+
+
+    User:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        id:
+          type: integer
+          example: 4
+        username:
+          type: string
+          example: Max
+        password:
+          type: string
+          example: pbkdf2_sha256$600000$JEzyvo75vnmJLWhtQdeOQI$yg9cwFx931qIR2BOwozYILMXpM5ajkd5Mu7C0109YvU=
+        friends:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+
+
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+
+
+    NewUser:
+      type: object
+      required:
+        - username
+        - password1
+        - password2
+      properties:
+        id:
+          type: integer
+          example: 4
+        username:
+          type: string
+          example: Max
+        password1:
+          type: string
+          example: pbkdf2_sha256$600000$JEzyvo75vnmJLWhtQdeOQI$yg9cwFx931qIR2BOwozYILMXpM5ajkd5Mu7C0109YvU=
+        password2:
+          type: string
+          example: pbkdf2_sha256$600000$JEzyvo75vnmJLWhtQdeOQI$yg9cwFx931qIR2BOwozYILMXpM5ajkd5Mu7C0109YvU=
+
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
